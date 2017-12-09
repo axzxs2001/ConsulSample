@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulDome001", "ConsulDome001\ConsulDome001.csproj", "{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulDome001", "ConsulDome001\ConsulDome001.csproj", "{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "工具", "工具", "{EC49B74F-B4EF-461F-A8C1-16B498F06C05}"
 EndProject
@@ -12,6 +12,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consul", "Consul", "{6011B2A7-FB34-4326-92C7-0135BCD2B3D1}"
 	ProjectSection(SolutionItems) = preProject
 		工具\consul\consul.exe = 工具\consul\consul.exe
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "文档", "文档", "{9B4A7327-9A6E-41A8-BBB4-FF7587688DBF}"
+	ProjectSection(SolutionItems) = preProject
+		文档\consul.docx = 文档\consul.docx
 	EndProjectSection
 EndProject
 Global
