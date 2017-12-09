@@ -5,6 +5,15 @@ VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulDome001", "ConsulDome001\ConsulDome001.csproj", "{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "工具", "工具", "{EC49B74F-B4EF-461F-A8C1-16B498F06C05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsAgent", "DNSAgent\DnsAgent.csproj", "{0BCC11FF-DC23-4DE0-B9AE-A516950C95DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consul", "Consul", "{6011B2A7-FB34-4326-92C7-0135BCD2B3D1}"
+	ProjectSection(SolutionItems) = preProject
+		工具\consul\consul.exe = 工具\consul\consul.exe
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +24,16 @@ Global
 		{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDB9A07F-AAC8-4184-8CAF-DD9D0CE5B943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BCC11FF-DC23-4DE0-B9AE-A516950C95DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCC11FF-DC23-4DE0-B9AE-A516950C95DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCC11FF-DC23-4DE0-B9AE-A516950C95DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCC11FF-DC23-4DE0-B9AE-A516950C95DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6011B2A7-FB34-4326-92C7-0135BCD2B3D1} = {EC49B74F-B4EF-461F-A8C1-16B498F06C05}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F375DCA-146D-4198-B881-4B2D5B330331}
