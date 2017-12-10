@@ -10,6 +10,28 @@ namespace ConsulDome001
         static void Main(string[] args)
         {
             var client = new ConsulClient();
+          
+
+
+
+        }
+
+        static void ACL()
+        {
+            var client = new ConsulClient();
+
+            var aclList = client.ACL.List().GetAwaiter().GetResult();
+
+            foreach (var acl in aclList.Response)
+            {
+                Console.WriteLine(acl.Name);
+
+            }
+        }
+
+        static void QueryServer()
+        {
+            var client = new ConsulClient();
             foreach (var dic in client.Agent.Services().GetAwaiter().GetResult().Response)
             {
                 Console.WriteLine(dic.Key + "  " + dic.Value.Address);
@@ -18,7 +40,6 @@ namespace ConsulDome001
             {
                 Console.WriteLine(dic.Key + "  " + dic.Value.Name);
             }
-
         }
         static void KV()
         {
