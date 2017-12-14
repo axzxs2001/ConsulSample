@@ -1,0 +1,16 @@
+{
+    "encrypt": "7TnJPB4lKtjEcCWWjN6jSA==",
+    "services": [{
+    "id":"dotnetcoresample",
+    "name":"dotnetcoresample",
+    "tags":["dotnetcoresample"],
+    "address": "192.168.1.101",
+    "port": 5000,
+    "checks": [
+    {
+        "http": "http://192.168.1.101:5000/",
+        "interval": "10s"
+    }
+    ]
+    }]
+}

@@ -9,9 +9,9 @@ namespace ConsulDome001
     {
         static void Main(string[] args)
         {
-            var client = new ConsulClient();
-          
+            // var client = new ConsulClient();
 
+            QueryServer();
 
 
         }
@@ -31,14 +31,17 @@ namespace ConsulDome001
 
         static void QueryServer()
         {
-            var client = new ConsulClient();
+            
+            var client = new ConsulClient(opt=> { opt.Datacenter = "dc1";  });
+            Console.WriteLine("Agent.Services");
             foreach (var dic in client.Agent.Services().GetAwaiter().GetResult().Response)
             {
-                Console.WriteLine(dic.Key + "  " + dic.Value.Address);
+                Console.WriteLine(dic.Key + "  " + dic.Value.Address+"  "+dic.Value.Port);
             }
+            Console.WriteLine("Agent.Checks");
             foreach (var dic in client.Agent.Checks().GetAwaiter().GetResult().Response)
             {
-                Console.WriteLine(dic.Key + "  " + dic.Value.Name);
+                Console.WriteLine(dic.Key + "  " + dic.Value.Name+" "+dic.Value.ServiceName+"  "+dic.Value.Node);
             }
         }
         static void KV()
