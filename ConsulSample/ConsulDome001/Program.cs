@@ -39,9 +39,30 @@ namespace ConsulDome001
 
 
             var client = new ConsulClient(opt=> { opt.Datacenter = "dc1";  });
+
+            Console.WriteLine("client.Catalog.Nodes");
+            foreach (var dic in client.Catalog.Nodes().GetAwaiter().GetResult().Response)
+            {        
+              
+                Console.WriteLine($"name:{dic.Name}  url:{dic.Address }");
+            }
+            Console.WriteLine("client.Catalog.Services");
+            foreach (var dic in client.Catalog.Services().GetAwaiter().GetResult().Response)
+            {
+                Console.WriteLine($"name:{dic.Key} ");
+
+                foreach(var s in dic.Value)
+                {
+                    Console.WriteLine("value:"+s);
+                }
+            }
+         
+
             Console.WriteLine("Agent.Members");
             foreach (var dic in client.Agent.Members(true).GetAwaiter().GetResult().Response)
             {
+              
+                
                 Console.WriteLine($"name:{dic.Name}  url:{dic.Addr }:{dic.Port} 状态：{dic.Status}");
             }
             var client1 = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
