@@ -42,7 +42,7 @@ namespace ConsulDome001
             Console.WriteLine("Agent.Members");
             foreach (var dic in client.Agent.Members(true).GetAwaiter().GetResult().Response)
             {
-                Console.WriteLine($"{dic.Name}  {dic.Addr }:{dic.Port}  {dic.Status}");
+                Console.WriteLine($"name:{dic.Name}  url:{dic.Addr }:{dic.Port} 状态：{dic.Status}");
             }
             var client1 = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
 
