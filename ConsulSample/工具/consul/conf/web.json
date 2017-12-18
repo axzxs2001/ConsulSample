@@ -8,6 +8,7 @@
     "port": 5000,
     "checks": [
     {
+	    "name":"dotnetcoresample_check",
         "http": "http://192.168.1.101:5000/",
         "interval": "10s"
     }

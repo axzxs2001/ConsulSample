@@ -13,11 +13,11 @@ namespace ConsulDome001
 
             QueryServer();
 
-            var getPair =  client.KV.Get("d").GetAwaiter().GetResult();
-            var value= Encoding.UTF8.GetString(getPair.Response.Value, 0,
-                getPair.Response.Value.Length);
+            //var getPair =  client.KV.Get("d").GetAwaiter().GetResult();
+            //var value= Encoding.UTF8.GetString(getPair.Response.Value, 0,
+            //    getPair.Response.Value.Length);
 
-            Console.WriteLine(value);
+            //Console.WriteLine(value);
         }
 
         static void ACL()
@@ -35,17 +35,19 @@ namespace ConsulDome001
 
         static void QueryServer()
         {
-            
+           // var client = new ConsulClient(new ConsulClientConfiguration() {  }, );
+
+
             var client = new ConsulClient(opt=> { opt.Datacenter = "dc1";  });
             Console.WriteLine("Agent.Members");
             foreach (var dic in client.Agent.Members(true).GetAwaiter().GetResult().Response)
             {
                 Console.WriteLine($"{dic.Name}  {dic.Addr }:{dic.Port}  {dic.Status}");
             }
-
+            var client1 = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
 
             Console.WriteLine("Agent.Services");
-            foreach (var dic in client.Agent.Services().GetAwaiter().GetResult().Response)
+            foreach (var dic in client1.Agent.Services().GetAwaiter().GetResult().Response)
             {
                 Console.WriteLine(dic.Key + "  " + dic.Value.Address+"  "+dic.Value.Port);
             }
@@ -55,7 +57,7 @@ namespace ConsulDome001
                 Console.WriteLine($"{dic.Key} {dic.Value.CheckID}  {dic.Value.Name} {dic.Value.ServiceName} {dic.Value.Node}");
             }
 
-        
+            Console.ReadLine();
         }
         static void KV()
         {
