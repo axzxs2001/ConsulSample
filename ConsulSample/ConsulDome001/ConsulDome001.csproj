@@ -7,6 +7,13 @@
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="0.7.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
+    <PackageReference Include="RestSharp.NetCore" Version="105.2.4-rc4-24214-01" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConsulSharp\ConsulSharp.csproj" />
   </ItemGroup>
 
 </Project>

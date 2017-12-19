@@ -2,6 +2,10 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp;
+using System.Net.Http;
+using ConsulSharp;
+using System.Diagnostics;
 
 namespace ConsulDome001
 {
@@ -9,8 +13,71 @@ namespace ConsulDome001
     {
         static void Main(string[] args)
         {
+            var d = DateTime.Now;
+            var serviceGovern = new ServiceGovern();
+            //foreach (var service in serviceGovern.GetServiceNames().GetAwaiter().GetResult())
+            //{
+            //    Console.WriteLine(service);
+            //}
+            foreach (var service in serviceGovern.GetServices().GetAwaiter().GetResult())
+            {
+                Console.WriteLine(service);
+            }
+            var dd = DateTime.Now - d;
+            Console.WriteLine(dd.TotalMilliseconds);
+
+
+            //
+            var client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:8500");
+            var response = client.GetAsync("/v1/catalog/service/service5000").GetAwaiter().GetResult();
+            Console.WriteLine(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            // var dd = DateTime.Now-d;
+            // Console.WriteLine(dd.TotalMilliseconds);
+            //AddSrvice();
+            //ServerDis2();
+            // ServerDis1();
+        }
+        private static void ServerDis2()
+        {
+            var client = new RestClient("http://localhost:8500");
+            var request = new RestRequest("/v1/catalog/services", Method.GET);
+
+            var response = client.Get(request);
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(response.Content);
+            foreach (var serviceCheck in jsonObj)
+            {
+
+                Console.WriteLine($"Service Name:/v1/catalog/service/{serviceCheck.Path}");
+
+                var request1 = new RestRequest($"/v1/catalog/service/{serviceCheck.Path}", Method.GET);
+                var response1 = client.Get(request1);
+                Console.WriteLine(response1.Content);
+            }
+
+        }
+        private static void ServerDis1()
+        {
+            var client = new RestClient("http://localhost:8500");
+            var request = new RestRequest("/v1/catalog/node/n2", Method.GET);
+
+            var response = client.Get(request);
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(response.Content);
+            var address = jsonObj.Services.service002.Address;
+            var port = jsonObj.Services.service002.Port;
+            Console.WriteLine(jsonObj.Services.service002.Address);
+            Console.WriteLine(jsonObj.Services.service002.Port);
+
+            var client1 = new RestClient($"http://{address}:{port}");
+            var request1 = new RestRequest("", Method.GET);
+            var response1 = client1.Get(request1);
+            Console.WriteLine(response1.Content);
+        }
+
+        private static void AddSrvice()
+        {
             var client = new ConsulClient();
-        
+
             var svcID = "service_test";
             var registration = new AgentServiceRegistration()
             {
@@ -44,7 +111,7 @@ namespace ConsulDome001
             var client = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
             Console.WriteLine("client.Catalog.Nodes");
             foreach (var dic in client.Catalog.Nodes().GetAwaiter().GetResult().Response)
-            {                
+            {
                 Console.WriteLine($"name:{dic.Name}  url:{dic.Address }");
             }
 
