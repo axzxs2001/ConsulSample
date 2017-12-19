@@ -1,9 +1,9 @@
 {
     "encrypt": "7TnJPB4lKtjEcCWWjN6jSA==",
     "services": [{
-    "id":"dotnetcoresample",
-    "name":"dotnetcoresample",
-    "tags":["dotnetcoresample"],
+    "id":"service001",
+    "name":"service5000",
+    "tags":["service5000"],
     "address": "192.168.1.101",
     "port": 5000,
     "checks": [
@@ -13,17 +13,5 @@
         "interval": "10s"
     }
     ]
-    },
-	{
-    "id":"dotnetcoresample1",
-    "name":"dotnetcoresample1",
-    "tags":["dotnetcoresample1"],
-    "address": "192.168.1.126",
-    "port": 5000,
-    "checks": [
-    {
-	    "name":"dotnetcoresample_check",
-        "http": "http://192.168.1.126:5000/",
-        "interval": "10s"
-    }]}]
+    }]
 }

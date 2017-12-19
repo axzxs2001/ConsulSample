@@ -9,76 +9,77 @@ namespace ConsulDome001
     {
         static void Main(string[] args)
         {
-             var client = new ConsulClient();
-
+            var client = new ConsulClient();
+        
+            var svcID = "service_test";
+            var registration = new AgentServiceRegistration()
+            {
+                Name = svcID,
+                Tags = new[] { "bar", "baz" },
+                Port = 8000,
+                Check = new AgentServiceCheck
+                {
+                    TTL = TimeSpan.FromSeconds(15)
+                }
+            };
+            client.Agent.ServiceRegister(registration);
             QueryServer();
-
-            //var getPair =  client.KV.Get("d").GetAwaiter().GetResult();
-            //var value= Encoding.UTF8.GetString(getPair.Response.Value, 0,
-            //    getPair.Response.Value.Length);
-
-            //Console.WriteLine(value);
+            var wrtie = client.Agent.ServiceDeregister(svcID).GetAwaiter().GetResult();
+            Console.WriteLine(wrtie.StatusCode.ToString());
         }
 
         static void ACL()
         {
             var client = new ConsulClient();
-
             var aclList = client.ACL.List().GetAwaiter().GetResult();
-
             foreach (var acl in aclList.Response)
             {
                 Console.WriteLine(acl.Name);
-
             }
         }
 
         static void QueryServer()
         {
-           // var client = new ConsulClient(new ConsulClientConfiguration() {  }, );
-
-
-            var client = new ConsulClient(opt=> { opt.Datacenter = "dc1";  });
-
+            // var client = new ConsulClient(new ConsulClientConfiguration() {  }, );
+            var client = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
             Console.WriteLine("client.Catalog.Nodes");
             foreach (var dic in client.Catalog.Nodes().GetAwaiter().GetResult().Response)
-            {        
-              
+            {                
                 Console.WriteLine($"name:{dic.Name}  url:{dic.Address }");
             }
+
+            Console.WriteLine("=========================================");
             Console.WriteLine("client.Catalog.Services");
             foreach (var dic in client.Catalog.Services().GetAwaiter().GetResult().Response)
             {
                 Console.WriteLine($"name:{dic.Key} ");
 
-                foreach(var s in dic.Value)
+                foreach (var s in dic.Value)
                 {
-                    Console.WriteLine("value:"+s);
+                    Console.WriteLine("value:" + s);
                 }
             }
-         
-
+            Console.WriteLine("=========================================");
             Console.WriteLine("Agent.Members");
             foreach (var dic in client.Agent.Members(true).GetAwaiter().GetResult().Response)
             {
-              
-                
                 Console.WriteLine($"name:{dic.Name}  url:{dic.Addr }:{dic.Port} 状态：{dic.Status}");
             }
+            Console.WriteLine("=========================================");
             var client1 = new ConsulClient(opt => { opt.Datacenter = "dc1"; });
-
             Console.WriteLine("Agent.Services");
             foreach (var dic in client1.Agent.Services().GetAwaiter().GetResult().Response)
             {
-                Console.WriteLine(dic.Key + "  " + dic.Value.Address+"  "+dic.Value.Port);
+                Console.WriteLine(dic.Key + "  " + dic.Value.Address + "  " + dic.Value.Port);
             }
+            Console.WriteLine("=========================================");
             Console.WriteLine("Agent.Checks");
             foreach (var dic in client.Agent.Checks().GetAwaiter().GetResult().Response)
             {
                 Console.WriteLine($"{dic.Key} {dic.Value.CheckID}  {dic.Value.Name} {dic.Value.ServiceName} {dic.Value.Node}");
             }
-
             Console.ReadLine();
+
         }
         static void KV()
         {
@@ -109,7 +110,6 @@ namespace ConsulDome001
             getRequest = kv.Get(key).Result;
             Console.WriteLine(getRequest.Response);
             // Assert.IsNull(getRequest.Response);
-
             var result = HelloConsul().GetAwaiter().GetResult();
             Console.WriteLine(result);
         }
@@ -122,9 +122,7 @@ namespace ConsulDome001
                 {
                     Value = Encoding.UTF8.GetBytes("Hello Consul")
                 };
-
                 var putAttempt = await client.KV.Put(putPair);
-
                 if (putAttempt.Response)
                 {
                     var getPair = await client.KV.Get("hello");
