@@ -19,7 +19,7 @@ namespace ConsulDome001
             //{
             //    Console.WriteLine(service);
             //}
-            foreach (var service in serviceGovern.GetServices().GetAwaiter().GetResult())
+            foreach (var service in serviceGovern.GetServices(serviceName: "service5000").GetAwaiter().GetResult())
             {
                 Console.WriteLine(service);
             }
