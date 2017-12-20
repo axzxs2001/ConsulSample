@@ -28,10 +28,10 @@ namespace ConsulDome001
 
 
             //
-            var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:8500");
-            var response = client.GetAsync("/v1/catalog/service/service5000").GetAwaiter().GetResult();
-            Console.WriteLine(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            //var client = new HttpClient();
+            //client.BaseAddress = new Uri("http://localhost:8500");
+            //var response = client.GetAsync("/v1/catalog/service/service5000").GetAwaiter().GetResult();
+            //Console.WriteLine(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
             // var dd = DateTime.Now-d;
             // Console.WriteLine(dd.TotalMilliseconds);
             //AddSrvice();

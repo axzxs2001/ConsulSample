@@ -27,12 +27,12 @@ namespace ConsulSharp
         /// <param name="requestUrl">Request Url</param>
         /// <param name="dataCenter">Data Center Name</param>
         /// <returns></returns>
-        public async Task<string[]> GetServiceNames(string requestUrl = "/v1/catalog/services", string dataCenter = null)
+        public async Task<string[]> GetServiceNames(string dataCenter = null)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
 
-            var response = await client.GetAsync(requestUrl);
+            var response = await client.GetAsync("/v1/catalog/services");
             var json = await response.Content.ReadAsStringAsync();
             if (!string.IsNullOrEmpty(json))
             {
@@ -61,12 +61,11 @@ namespace ConsulSharp
         /// get service address
         /// </summary>
         /// <param name="requestUrl">Request Url</param>
-        /// <param name="dataCenter">Data Center Name</param>
-        /// <param name="serviceState">service state(enable or disable)</param>
+        /// <param name="dataCenter">Data Center Name</param> 
         /// <returns></returns>
-        public async Task<string[]> GetServices(string requestUrl = "/v1/catalog/services", string dataCenter = null, ServiceState serviceState = ServiceState.Full)
+        public async Task<string[]> GetServices(string dataCenter = null)
         {
-            var serviceNames = await GetServiceNames(requestUrl, dataCenter);
+            var serviceNames = await GetServiceNames(dataCenter);
             var services = new List<string>();
             foreach (var serviceName in serviceNames)
             {
@@ -75,6 +74,7 @@ namespace ConsulSharp
                     continue;
                 }
                 var client = new HttpClient();
+
                 client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
                 var response = await client.GetAsync($"/v1/catalog/service/{serviceName}");
                 var json = await response.Content.ReadAsStringAsync();
@@ -102,17 +102,16 @@ namespace ConsulSharp
         }
 
         /// <summary>
-        /// get service address by service name
+        /// get service address
         /// </summary>
-        /// <param name="serviceName">Service Name</param>
         /// <param name="requestUrl">Request Url</param>
-        /// <param name="dataCenter">Data Center Name</param>
-        /// <param name="serviceState">service state(enable or disable)</param>
+        /// <param name="dataCenter">Data Center Name</param> 
         /// <returns></returns>
-        public async Task<string[]> GetServices(string serviceName, string requestUrl = "/v1/catalog/services", string dataCenter = null, ServiceState serviceState = ServiceState.Full)
+        public async Task<string[]> GetServices(string serviceName, string dataCenter = null)
         {
             var services = new List<string>();
             var client = new HttpClient();
+
             client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
             var response = await client.GetAsync($"/v1/catalog/service/{serviceName}");
             var json = await response.Content.ReadAsStringAsync();
@@ -124,6 +123,133 @@ namespace ConsulSharp
                     foreach (var service in jsonObj)
                     {
                         services.Add($"{service.ServiceAddress}:{service.ServicePort}");
+                    }
+                }
+                catch (JsonReaderException)
+                {
+                    throw new ApplicationException($"back content is error formatter:{json}");
+                }
+            }
+            else
+            {
+                throw new ApplicationException($"back content is empty.");
+            }
+
+            return services.ToArray();
+        }
+
+        /// <summary>
+        /// get service address by check service name
+        /// </summary>
+        /// <param name="serviceName">Service Name</param>
+        /// <param name="requestUrl">Request Url</param>
+        /// <param name="dataCenter">Data Center Name</param>
+        /// <param name="serviceState">service state(enable or disable)</param>
+        /// <returns></returns>
+        public async Task<string[]> GetCheckServices(string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
+        {
+            var serviceNames = await GetServiceNames(dataCenter);
+            var services = new List<string>();
+            foreach (var serviceName in serviceNames)
+            {
+                var client = new HttpClient();
+                client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+                var response = await client.GetAsync($"/v1/health/service/{serviceName}");
+                var json = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                        foreach (var service in jsonObj)
+                        {
+                            switch (serviceState)
+                            {
+                                case ServiceState.Full:
+                                    services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                    break;
+                                case ServiceState.Enable:
+
+                                    foreach (var check in service.Checks)
+                                    {
+                                        if (check.ServiceName == serviceName && check.Status == "passing")
+                                        {
+                                            services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                        }
+                                    }
+                                    break;
+                                case ServiceState.Disable:
+                                    foreach (var check in service.Checks)
+                                    {
+                                        if (check.ServiceName == serviceName && check.Status != "passing")
+                                        {
+                                            services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    catch (JsonReaderException)
+                    {
+                        throw new ApplicationException($"back content is error formatter:{json}");
+                    }
+                }
+                else
+                {
+                    throw new ApplicationException($"back content is empty.");
+                }
+            }
+            return services.ToArray();
+        }
+
+        /// <summary>
+        /// get service address by check service name
+        /// </summary>
+        /// <param name="serviceName">Service Name</param>
+        /// <param name="requestUrl">Request Url</param>
+        /// <param name="dataCenter">Data Center Name</param>
+        /// <param name="serviceState">service state(enable or disable)</param>
+        /// <returns></returns>
+        public async Task<string[]> GetCheckServices(string serviceName,string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
+        {
+            var services = new List<string>();
+            var client = new HttpClient();
+            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+            var response = await client.GetAsync($"/v1/health/service/{serviceName}");
+            var json = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    foreach (var service in jsonObj)
+                    {
+                        switch (serviceState)
+                        {
+                            case ServiceState.Full:
+                                services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                break;
+                            case ServiceState.Enable:
+
+                                foreach (var check in service.Checks)
+                                {
+                                    if (check.ServiceName == serviceName && check.Status == "passing")
+                                    {
+                                        services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                    }
+                                }
+                                break;
+                            case ServiceState.Disable:
+                                foreach (var check in service.Checks)
+                                {
+                                    if (check.ServiceName == serviceName && check.Status != "passing")
+                                    {
+                                        services.Add($"{service.Service.Address}:{service.Service.Port}");
+                                    }
+                                }
+                                break;
+                        }
                     }
                 }
                 catch (JsonReaderException)
