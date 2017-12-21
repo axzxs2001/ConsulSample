@@ -8,9 +8,13 @@
     "port": 5002,
     "checks": [
     {
-	    "name":"lisapi_check",
+	    "id":"lisapicheck001",
+	    "name":"lisapicheck001",
         "http": "http://192.168.1.101:5002/health",
-        "interval": "10s"
+        "interval": "10s",
+        "tls_skip_verify": false,
+        "method": "GET",  
+        "timeout": "1s"
     }
     ]
     }]
