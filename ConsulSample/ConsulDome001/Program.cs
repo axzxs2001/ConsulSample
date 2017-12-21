@@ -13,18 +13,25 @@ namespace ConsulDome001
     {
         static void Main(string[] args)
         {
-            var d = DateTime.Now;
-            var serviceGovern = new ServiceGovern();
-            //foreach (var service in serviceGovern.GetServiceNames().GetAwaiter().GetResult())
+            var client = new ConsulClient();
+            var kv = client.KV;
+            var key = "firstkey";
+   
+            var getRequest = kv.Get(key).Result;
+
+            Console.WriteLine(Encoding.Default.GetString(getRequest.Response.Value));
+            //var d = DateTime.Now;
+            //var serviceGovern = new ServiceGovern();
+            ////foreach (var service in serviceGovern.GetServiceNames().GetAwaiter().GetResult())
+            ////{
+            ////    Console.WriteLine(service);
+            ////}
+            //foreach (var service in serviceGovern.GetServices(serviceName: "service5000").GetAwaiter().GetResult())
             //{
             //    Console.WriteLine(service);
             //}
-            foreach (var service in serviceGovern.GetServices(serviceName: "service5000").GetAwaiter().GetResult())
-            {
-                Console.WriteLine(service);
-            }
-            var dd = DateTime.Now - d;
-            Console.WriteLine(dd.TotalMilliseconds);
+            //var dd = DateTime.Now - d;
+            //Console.WriteLine(dd.TotalMilliseconds);
 
 
             //
