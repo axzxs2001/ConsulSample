@@ -263,5 +263,24 @@ namespace ConsulSharp
             }
             return services.ToArray();
         }
+
+
+        /// <summary>
+        /// 注册服务
+        /// </summary>
+        /// <returns></returns>
+        public async Task RegisterServices()
+        {
+
+        }
+        /// <summary>
+        /// 注销服务
+        /// </summary>
+        /// <returns></returns>
+        public async Task UnRegisterServices()
+        {
+
+        }
+            
     }
 }
