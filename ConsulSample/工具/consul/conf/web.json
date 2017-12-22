@@ -15,6 +15,15 @@
         "tls_skip_verify": false,
         "method": "GET",  
         "timeout": "1s"
+    },
+	   {
+	    "id":"lisapicheck003",
+	    "name":"lisapicheck003",
+        "http": "http://192.168.1.101:5002",
+        "interval": "10s",
+        "tls_skip_verify": false,
+        "method": "GET",  
+        "timeout": "1s"
     }
     ]
     }]

@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsulSharp
@@ -266,20 +268,34 @@ namespace ConsulSharp
 
 
         /// <summary>
-        /// 注册服务
+        /// Register Services
         /// </summary>
         /// <returns></returns>
-        public async Task RegisterServices()
+        /// <param name="service">service</param>
+        public async Task RegisterServices(Service service)
         {
-
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseAddress);
+            var json = JsonConvert.SerializeObject(service);
+            var stream = new MemoryStream(Encoding.Default.GetBytes(json));
+            var content = new StreamContent(stream);
+            var response = await client.PutAsync($"/v1/agent/service/register", content);
+            var backJson = await response.Content.ReadAsStringAsync();
         }
         /// <summary>
         /// 注销服务
         /// </summary>
         /// <returns></returns>
-        public async Task UnRegisterServices()
+        /// <param name="serviceID">service ID</param>
+        public async Task UnRegisterServices(string serviceID)
         {
-
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseAddress);
+            var json = $"{{service_id:{serviceID}}}";
+            var stream = new MemoryStream(Encoding.Default.GetBytes(json));
+            var content = new StreamContent(stream);
+            var response = await client.PutAsync($"/v1/agent/service/deregister", content);
+            var backJson = await response.Content.ReadAsStringAsync();
         }
             
     }
