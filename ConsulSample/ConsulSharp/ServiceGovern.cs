@@ -272,7 +272,7 @@ namespace ConsulSharp
         /// </summary>
         /// <returns></returns>
         /// <param name="service">service</param>
-        public async Task<bool> RegisterServices(Service service)
+        public async Task<(bool result, string backJson)> RegisterServices(Service service)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);
@@ -281,19 +281,20 @@ namespace ConsulSharp
             var content = new StreamContent(stream);
             var response = await client.PutAsync($"/v1/agent/service/register", content);
             var backJson = await response.Content.ReadAsStringAsync();
-            return response.StatusCode == System.Net.HttpStatusCode.OK;
+            return (result: response.StatusCode == System.Net.HttpStatusCode.OK,backJson:backJson);
         }
         /// <summary>
         /// 注销服务
         /// </summary>
         /// <returns></returns>
         /// <param name="serviceID">service ID</param>
-        public async Task<bool> UnRegisterServices(string serviceID)
+        public async Task<(bool result,string backJson)> UnRegisterServices(string serviceID)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);
             var response = await client.PutAsync($"/v1/agent/service/deregister/"+ serviceID, null);
-            return response.StatusCode == System.Net.HttpStatusCode.OK;
+            var backJson = await response.Content.ReadAsStringAsync();
+            return (result:response.StatusCode == System.Net.HttpStatusCode.OK,backJson:backJson);
 
 
         }

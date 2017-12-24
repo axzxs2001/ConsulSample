@@ -9,7 +9,7 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、注册服务  2、注销服务  3、查询服务");
+                Console.WriteLine("1、注册服务  2、注销服务  3、查询服务  4、查询健康服务");
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -21,10 +21,27 @@ namespace ConsulSharpSample
                     case "3":
                         QueryFullServices();
                         break;
+                    case "4":
+                        QueryHealthServices();
+                        break;
                 }
             }
         }
+        /// <summary>
+        /// 查旬健康的服务 
+        /// </summary>
+        private static void QueryHealthServices()
+        {
+            var serviceGovern = new ServiceGovern();
+            foreach (var address in serviceGovern.GetCheckServices().GetAwaiter().GetResult())
+            {
+                Console.WriteLine(address);
+            }
+        }
 
+        /// <summary>
+        /// 查询全部服务
+        /// </summary>
         private static void QueryFullServices()
         {
             var serviceGovern = new ServiceGovern();
@@ -33,12 +50,16 @@ namespace ConsulSharpSample
                 Console.WriteLine(address);
             }
         }
-
+        /// <summary>
+        /// Deregister Service注销服务 
+        /// </summary>
         private static void UnRegisterService()
         {
             var serviceGovern = new ServiceGovern();
             var result = serviceGovern.UnRegisterServices("newservice001").GetAwaiter().GetResult();
-            Console.WriteLine(result);
+            Console.WriteLine(result.backJson);
+            Console.WriteLine(result.result);
+
         }
 
         /// <summary>
@@ -57,7 +78,8 @@ namespace ConsulSharpSample
 
             var serviceGovern = new ServiceGovern();
             var result = serviceGovern.RegisterServices(service).GetAwaiter().GetResult();
-            Console.WriteLine(result);
+            Console.WriteLine(result.backJson);
+            Console.WriteLine(result.result);
 
         }
     }
