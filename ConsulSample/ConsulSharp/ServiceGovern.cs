@@ -213,7 +213,7 @@ namespace ConsulSharp
         /// <param name="dataCenter">Data Center Name</param>
         /// <param name="serviceState">service state(enable or disable)</param>
         /// <returns></returns>
-        public async Task<string[]> GetCheckServices(string serviceName,string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
+        public async Task<string[]> GetCheckServices(string serviceName, string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
         {
             var services = new List<string>();
             var client = new HttpClient();
@@ -272,7 +272,7 @@ namespace ConsulSharp
         /// </summary>
         /// <returns></returns>
         /// <param name="service">service</param>
-        public async Task RegisterServices(Service service)
+        public async Task<bool> RegisterServices(Service service)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);
@@ -281,22 +281,22 @@ namespace ConsulSharp
             var content = new StreamContent(stream);
             var response = await client.PutAsync($"/v1/agent/service/register", content);
             var backJson = await response.Content.ReadAsStringAsync();
+            return response.StatusCode == System.Net.HttpStatusCode.OK;
         }
         /// <summary>
         /// 注销服务
         /// </summary>
         /// <returns></returns>
         /// <param name="serviceID">service ID</param>
-        public async Task UnRegisterServices(string serviceID)
+        public async Task<bool> UnRegisterServices(string serviceID)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);
-            var json = $"{{service_id:{serviceID}}}";
-            var stream = new MemoryStream(Encoding.Default.GetBytes(json));
-            var content = new StreamContent(stream);
-            var response = await client.PutAsync($"/v1/agent/service/deregister", content);
-            var backJson = await response.Content.ReadAsStringAsync();
+            var response = await client.PutAsync($"/v1/agent/service/deregister/"+ serviceID, null);
+            return response.StatusCode == System.Net.HttpStatusCode.OK;
+
+
         }
-            
+
     }
 }

@@ -6,7 +6,7 @@ namespace ConsulSharp
 {
     public abstract class Check
     {
-        public int ID
+        public string ID
         { get; set; }
         public string Name
         { get; set; }
