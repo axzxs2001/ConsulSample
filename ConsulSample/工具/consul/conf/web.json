@@ -26,5 +26,24 @@
         "timeout": "1s"
     }
     ]
-    }]
+    },
+    {
+    "id":"risapi001",
+    "name":"risapi",
+    "tags":["risapi"],
+    "address": "192.168.1.101",
+    "port": 5004,
+    "checks": [
+    {
+	    "id":"risapicheck001",
+	    "name":"risapicheck001",
+        "http": "http://192.168.1.101:5004/health",
+        "interval": "10s",
+        "tls_skip_verify": false,
+        "method": "GET",  
+        "timeout": "1s"
+    }
+    ]
+    }
+	]
 }

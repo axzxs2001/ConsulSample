@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ConsulSharp.Health;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -205,6 +206,68 @@ namespace ConsulSharp
             return services.ToArray();
         }
 
+        ///// <summary>
+        ///// get service address by check service name
+        ///// </summary>
+        ///// <param name="serviceName">Service Name</param>
+        ///// <param name="requestUrl">Request Url</param>
+        ///// <param name="dataCenter">Data Center Name</param>
+        ///// <param name="serviceState">service state(enable or disable)</param>
+        ///// <returns></returns>
+        //public async Task<string[]> GetCheckServices(string serviceName, string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
+        //{
+        //    var services = new List<string>();
+        //    var client = new HttpClient();
+        //    client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+        //    var response = await client.GetAsync($"/v1/health/service/{serviceName}");
+        //    var json = await response.Content.ReadAsStringAsync();
+        //    if (!string.IsNullOrEmpty(json))
+        //    {
+        //        try
+        //        {
+        //            dynamic jsonObj = JsonConvert.DeserializeObject(json);
+        //            foreach (var service in jsonObj)
+        //            {
+        //                switch (serviceState)
+        //                {
+        //                    case ServiceState.Full:
+        //                        services.Add($"{service.Service.Address}:{service.Service.Port}");
+        //                        break;
+        //                    case ServiceState.Enable:
+
+        //                        foreach (var check in service.Checks)
+        //                        {
+        //                            if (check.ServiceName == serviceName && check.Status == "passing")
+        //                            {
+        //                                services.Add($"{service.Service.Address}:{service.Service.Port}");
+        //                            }
+        //                        }
+        //                        break;
+        //                    case ServiceState.Disable:
+        //                        foreach (var check in service.Checks)
+        //                        {
+        //                            if (check.ServiceName == serviceName && check.Status != "passing")
+        //                            {
+        //                                services.Add($"{service.Service.Address}:{service.Service.Port}");
+        //                            }
+        //                        }
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //        catch (JsonReaderException)
+        //        {
+        //            throw new ApplicationException($"back content is error formatter:{json}");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        throw new ApplicationException($"back content is empty.");
+        //    }
+        //    return services.ToArray();
+        //}
+
+
         /// <summary>
         /// get service address by check service name
         /// </summary>
@@ -213,7 +276,7 @@ namespace ConsulSharp
         /// <param name="dataCenter">Data Center Name</param>
         /// <param name="serviceState">service state(enable or disable)</param>
         /// <returns></returns>
-        public async Task<string[]> GetCheckServices(string serviceName, string dataCenter = null, ServiceState serviceState = ServiceState.Enable)
+        public async Task<QueryHealthService[]> GetCheckServices(string serviceName, string dataCenter = null)
         {
             var services = new List<string>();
             var client = new HttpClient();
@@ -224,35 +287,10 @@ namespace ConsulSharp
             {
                 try
                 {
-                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                    foreach (var service in jsonObj)
-                    {
-                        switch (serviceState)
-                        {
-                            case ServiceState.Full:
-                                services.Add($"{service.Service.Address}:{service.Service.Port}");
-                                break;
-                            case ServiceState.Enable:
+                    var queryHealthServices = JsonConvert.DeserializeObject<QueryHealthService[]>(json);
+                    return queryHealthServices;
 
-                                foreach (var check in service.Checks)
-                                {
-                                    if (check.ServiceName == serviceName && check.Status == "passing")
-                                    {
-                                        services.Add($"{service.Service.Address}:{service.Service.Port}");
-                                    }
-                                }
-                                break;
-                            case ServiceState.Disable:
-                                foreach (var check in service.Checks)
-                                {
-                                    if (check.ServiceName == serviceName && check.Status != "passing")
-                                    {
-                                        services.Add($"{service.Service.Address}:{service.Service.Port}");
-                                    }
-                                }
-                                break;
-                        }
-                    }
+
                 }
                 catch (JsonReaderException)
                 {
@@ -262,10 +300,8 @@ namespace ConsulSharp
             else
             {
                 throw new ApplicationException($"back content is empty.");
-            }
-            return services.ToArray();
+            }       
         }
-
 
         /// <summary>
         /// Register Services
