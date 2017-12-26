@@ -41,7 +41,7 @@ namespace ConsulSharpSample
                 switch (Console.ReadLine())
                 {
                     case "1":
-                     
+
                         break;
                     case "2":
                         QueryHealthServicesByName();
@@ -51,7 +51,7 @@ namespace ConsulSharpSample
                 }
             }
         }
-   
+
 
         /// <summary>
         /// 按名称查询健康的服务 
@@ -60,7 +60,7 @@ namespace ConsulSharpSample
         {
             Console.WriteLine("请输入服务名称：");
             var serviceName = Console.ReadLine();
-            var serviceGovern = new ServiceGovern();           
+            var serviceGovern = new ServiceGovern();
             foreach (var healthService in serviceGovern.HealthServiceByName(serviceName: serviceName).GetAwaiter().GetResult())
             {
                 Console.WriteLine($"服务名称：{healthService.Service.Service} {healthService.Service.Address}:{healthService.Service.Port}");
@@ -80,13 +80,16 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、查询全部Catalog服务  2、按名称查Catalog服务   按e退出");
+                Console.WriteLine("1、查询Catalog数据中心  2、查询全部Catalog服务  3、按名称查Catalog服务   按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        QueryCatalogServices();
+                        QueryCatalogDatacenters();
                         break;
                     case "2":
+                        QueryCatalogServices();
+                        break;
+                    case "3":
                         QueryCatalogServiceByName();
                         break;
                     case "e":
@@ -94,6 +97,19 @@ namespace ConsulSharpSample
                 }
             }
         }
+        /// <summary>
+        /// 查旬Catalog的数据中心
+        /// </summary>
+        private static void QueryCatalogDatacenters()
+        {
+            var serviceGovern = new ServiceGovern();
+            var i = 1;
+            foreach (var service in serviceGovern.CatalogDatacenters().GetAwaiter().GetResult())
+            {
+                Console.WriteLine($"{i++ }、{service}");
+            }
+        }
+
         /// <summary>
         /// 查旬Catalog的服务 
         /// </summary>
@@ -104,8 +120,8 @@ namespace ConsulSharpSample
             foreach (var service in serviceGovern.CatalogServices().GetAwaiter().GetResult())
             {
                 var content = new StringBuilder($"{i++ }、{service.Key}:");
-               
-                foreach(var value in service.Value)
+
+                foreach (var value in service.Value)
                 {
                     content.Append($"{value}，");
                 }

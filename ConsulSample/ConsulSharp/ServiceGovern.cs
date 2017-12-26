@@ -26,6 +26,40 @@ namespace ConsulSharp
 
         #region catalog
         /// <summary>
+        /// get catalog datacenter
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string[]> CatalogDatacenters()
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseAddress);
+            var response = await client.GetAsync("/v1/catalog/datacenters");
+            var json = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    var services = new List<string>();
+                    foreach (var serviceCheck in jsonObj)
+                    {                        
+                        services.Add(serviceCheck.Value);
+                    }
+                    return services.ToArray();
+                }
+                catch (JsonReaderException)
+                {
+                    throw new ApplicationException($"back content is error formatter:{json}");
+                }
+            }
+            else
+            {
+                throw new ApplicationException($"back content is empty.");
+            }
+        }
+
+
+        /// <summary>
         /// get catalog services
         /// </summary>    
         /// <param name="requestUrl">Request Url</param>
