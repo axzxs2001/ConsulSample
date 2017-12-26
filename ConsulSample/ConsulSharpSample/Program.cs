@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using ConsulSharp;
 
 namespace ConsulSharpSample
@@ -9,7 +10,134 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、注册服务  2、注销服务  3、查询服务  4、查询健康服务  5、按名称查服务");
+                Console.WriteLine("1、注册管理  2、Catalog查询  3、Health查询   按e退出");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        ServiceManage();
+                        break;
+                    case "2":
+                        CatalogQuery();
+                        break;
+                    case "3":
+                        HealthQuery();
+                        break;
+                    case "e":
+                        return;
+                }
+            }
+        }
+
+
+        #region Health查询
+        /// <summary>
+        /// Health查询
+        /// </summary>
+        static void HealthQuery()
+        {
+            while (true)
+            {
+                Console.WriteLine("1、查询全部Catalog服务  2、按名称查Catalog服务  按e退出");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                     
+                        break;
+                    case "2":
+                        QueryHealthServicesByName();
+                        break;
+                    case "e":
+                        return;
+                }
+            }
+        }
+   
+
+        /// <summary>
+        /// 按名称查询健康的服务 
+        /// </summary>
+        private static void QueryHealthServicesByName()
+        {
+            Console.WriteLine("请输入服务名称：");
+            var serviceName = Console.ReadLine();
+            var serviceGovern = new ServiceGovern();           
+            foreach (var healthService in serviceGovern.HealthServiceByName(serviceName: serviceName).GetAwaiter().GetResult())
+            {
+                Console.WriteLine($"服务名称：{healthService.Service.Service} {healthService.Service.Address}:{healthService.Service.Port}");
+
+                foreach (var check in healthService.Checks)
+                {
+                    Console.WriteLine($"   CheckID:{check.CheckID}  状态：{check.Status} {check.Output}");
+                }
+            }
+        }
+        #endregion
+        #region Catalog查询
+        /// <summary>
+        /// Catalog查询
+        /// </summary>
+        static void CatalogQuery()
+        {
+            while (true)
+            {
+                Console.WriteLine("1、查询全部Catalog服务  2、按名称查Catalog服务   按e退出");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        QueryCatalogServices();
+                        break;
+                    case "2":
+                        QueryCatalogServiceByName();
+                        break;
+                    case "e":
+                        return;
+                }
+            }
+        }
+        /// <summary>
+        /// 查旬Catalog的服务 
+        /// </summary>
+        private static void QueryCatalogServices()
+        {
+            var serviceGovern = new ServiceGovern();
+            var i = 1;
+            foreach (var service in serviceGovern.CatalogServices().GetAwaiter().GetResult())
+            {
+                var content = new StringBuilder($"{i++ }、{service.Key}:");
+               
+                foreach(var value in service.Value)
+                {
+                    content.Append($"{value}，");
+                }
+                Console.WriteLine(content.ToString().TrimEnd('，'));
+            }
+        }
+
+        /// <summary>
+        /// 按服务名称查询Catalog服务
+        /// </summary>
+        private static void QueryCatalogServiceByName()
+        {
+            Console.WriteLine("请输入服务名称：");
+            var serviceName = Console.ReadLine();
+            var serviceGovern = new ServiceGovern();
+            foreach (var service in serviceGovern.CatalogServiceByName(serviceName).GetAwaiter().GetResult())
+            {
+                Console.WriteLine($"Node:{service.Node }  服务名称：{service.ServiceName} 地址：{service.ServiceAddress}:{service.ServicePort}");
+            }
+        }
+
+        #endregion
+
+        #region 注册，注销服务
+        /// <summary>
+        /// 服务注册，注销
+        /// </summary>
+        static void ServiceManage()
+        {
+            while (true)
+            {
+                Console.WriteLine("1、注册服务  2、注销服务  按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -18,60 +146,12 @@ namespace ConsulSharpSample
                     case "2":
                         UnRegisterService();
                         break;
-                    case "3":
-                        QueryFullServices();
-                        break;
-                    case "4":
-                        QueryHealthServices();
-                        break;
-                    case "5":
-                        QueryHealthServicesByName();
-                        break;
-                }
-            }
-        }
-        /// <summary>
-        /// 按名称查询健康的服务 
-        /// </summary>
-        private static void QueryHealthServicesByName()
-        {
-            Console.WriteLine("请输入服务名称：");
-            var serviceName = Console.ReadLine();
-            var serviceGovern = new ServiceGovern();
-            foreach (var healthService in serviceGovern.GetCheckServices(serviceName:serviceName).GetAwaiter().GetResult())
-            {
-                Console.WriteLine($"服务名称：{healthService.Service.Service} {healthService.Service.Address}:{healthService.Service.Port}");
-
-                foreach(var check in healthService.Checks)
-                {
-                    Console.WriteLine($"   CheckID:{check.CheckID}  状态：{check.Status} {check.Output}");
+                    case "e":
+                        return;
                 }
             }
         }
 
-        /// <summary>
-        /// 查旬健康的服务 
-        /// </summary>
-        private static void QueryHealthServices()
-        {
-            var serviceGovern = new ServiceGovern();
-            foreach (var address in serviceGovern.GetCheckServices().GetAwaiter().GetResult())
-            {
-                Console.WriteLine(address);
-            }
-        }
-
-        /// <summary>
-        /// 查询全部服务
-        /// </summary>
-        private static void QueryFullServices()
-        {
-            var serviceGovern = new ServiceGovern();
-            foreach (var address in serviceGovern.GetServices().GetAwaiter().GetResult())
-            {
-                Console.WriteLine(address);
-            }
-        }
         /// <summary>
         /// Deregister Service注销服务 
         /// </summary>
@@ -104,5 +184,7 @@ namespace ConsulSharpSample
             Console.WriteLine(result.result);
 
         }
+
+        #endregion
     }
 }
