@@ -31,7 +31,7 @@ namespace ConsulSharp
         /// <param name="url">request url</param>
         /// <param name="dataCenter">datacenter</param>
         /// <returns></returns>
-        protected async Task<T> CallConsulAPI<T>(string url, string dataCenter = null)
+        protected async Task<T> Get<T>(string url, string dataCenter = null)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
@@ -61,7 +61,7 @@ namespace ConsulSharp
         /// <param name="url">request url</param>
         /// <param name="dataCenter">datacenter</param>
         /// <returns></returns>
-        protected async Task<string> CallConsulReturnJson(string url, string dataCenter = null)
+        protected async Task<string> Get(string url, string dataCenter = null)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
@@ -76,7 +76,7 @@ namespace ConsulSharp
         /// <param name="entity">register entity</param>
         /// <param name="url">register url</param>
         /// <returns></returns>
-        protected async Task<(bool result, string backJson)> Register<T>(T entity, string url)
+        protected async Task<(bool result, string backJson)> Put<T>(T entity, string url)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);

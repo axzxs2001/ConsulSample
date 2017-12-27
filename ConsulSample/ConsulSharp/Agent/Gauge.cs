@@ -5,21 +5,23 @@ using System.Text;
 namespace ConsulSharp
 {
     /// <summary>
-    /// coord
+    /// gauge
     /// </summary>
-    public class Coord
+    public class Gauge
     {
         /// <summary>
-        /// adjustment
+        /// name
         /// </summary>
-        public int Adjustment { get; set; }
+        public string Name { get; set; }
+
         /// <summary>
-        /// error
+        /// value
         /// </summary>
-        public double Error { get; set; }
+        public long Value { get; set; }
+
         /// <summary>
-        /// vec
+        /// labels
         /// </summary>
-        public int[] Vec { get; set; }
+        public object Labels { get; set; }
     }
 }
