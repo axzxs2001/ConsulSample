@@ -80,7 +80,7 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、查询Catalog数据中心  2、查询Catalog的Nodes 3、查询全部Catalog服务  4、按名称查Catalog服务   按e退出");
+                Console.WriteLine("1、查询Catalog数据中心  2、查询Catalog的Nodes  3、按节点名称查询服务  4、查询全部Catalog服务  5、按名称查Catalog服务  6、注册catalog  7、注销catalog 按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -90,15 +90,47 @@ namespace ConsulSharpSample
                         QueryCatalogNodes();
                         break;
                     case "3":
-                        QueryCatalogServices();
+                        QueryCatalogNodeByName();
                         break;
                     case "4":
+                        QueryCatalogServices();
+                        break;
+                    case "5":
                         QueryCatalogServiceByName();
+                        break;
+                    case "6":
+                        RegisterCatalog();
+                        break;
+                    case "7":
+                        DeregisterCatalog();
                         break;
                     case "e":
                         return;
                 }
             }
+        }
+        /// <summary>
+        /// 注册catalog
+        /// </summary>
+        private static void RegisterCatalog()
+        {
+            var catalog = new CatalogEntity();          
+
+            var serviceGovern = new ServiceGovern();
+            var result = serviceGovern.RegisterCatalog(catalog).GetAwaiter().GetResult();
+            Console.WriteLine(result.backJson);
+            Console.WriteLine(result.result);
+        }
+        /// <summary>
+        /// 反注册catalog
+        /// </summary>
+        private static void DeregisterCatalog()
+        {
+            var catalog = new DeCatalogEntity();
+            var serviceGovern = new ServiceGovern();
+            var result = serviceGovern.DeregisterCatalog(catalog).GetAwaiter().GetResult();
+            Console.WriteLine(result.backJson);
+            Console.WriteLine(result.result);
         }
         /// <summary>
         /// 查旬Catalog的数据中心
@@ -123,6 +155,25 @@ namespace ConsulSharpSample
             {
                 Console.WriteLine($"{i++ }、{node.ID} {node.Node}  地址：{node.Address} 位于数据中心：{node.Datacenter}");
             }
+        }
+        /// <summary>
+        /// 查旬Catalog的nodes
+        /// </summary>
+        private static void QueryCatalogNodeByName()
+        {
+            Console.WriteLine("请输入Node名称：");
+            var nodeName = Console.ReadLine();
+            var serviceGovern = new ServiceGovern();
+            var i = 1;
+            var node = serviceGovern.CatalogNodeByName(nodeName).GetAwaiter().GetResult();
+
+            Console.WriteLine($"{i++ }、{node.Node.ID} {node.Node.Node}  地址：{node.Node.Address} 位于数据中心：{node.Node.Datacenter}");
+
+            foreach(var service in node.Services)
+            {
+                Console.WriteLine($"{service.Key}  {service.Value.Service}:{service.Value.Port}");
+            }
+
         }
         /// <summary>
         /// 查旬Catalog的服务 

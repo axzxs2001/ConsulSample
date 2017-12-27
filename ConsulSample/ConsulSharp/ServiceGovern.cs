@@ -61,22 +61,64 @@ namespace ConsulSharp
         /// <param name="url">request url</param>
         /// <param name="dataCenter">datacenter</param>
         /// <returns></returns>
-        public async Task<string> CallConsulReturnJson(string url,string dataCenter=null)
+        private async Task<string> CallConsulReturnJson(string url, string dataCenter = null)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
             var response = await client.GetAsync(url);
             return await response.Content.ReadAsStringAsync();
         }
+
+        /// <summary>
+        /// register
+        /// </summary>
+        /// <typeparam name="T">register type</typeparam>
+        /// <param name="entity">register entity</param>
+        /// <param name="url">register url</param>
+        /// <returns></returns>
+        private async Task<(bool result, string backJson)> Register<T>(T entity, string url)
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseAddress);
+            var json = JsonConvert.SerializeObject(entity);
+            var stream = new MemoryStream(Encoding.Default.GetBytes(json));
+            var content = new StreamContent(stream);
+            var response = await client.PutAsync(url, content);
+            var backJson = await response.Content.ReadAsStringAsync();
+            return (result: response.StatusCode == System.Net.HttpStatusCode.OK, backJson: backJson);
+        }
+
+
+
         #endregion
 
         #region catalog
+
+        /// <summary>
+        /// register service
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="service">service</param>
+        public async Task<(bool result, string backJson)> RegisterCatalog(CatalogEntity catalog)
+        {
+            return await Register(catalog, $"/v1/catalog/register");
+        }
+        /// <summary>
+        /// deregister service
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="deregisterEntity">deregister entity</param>
+        public async Task<(bool result, string backJson)> DeregisterCatalog(DeCatalogEntity deregisterEntity)
+        {
+            return await Register(deregisterEntity, $"/v1/catalog/deregister");
+        }
+
         /// <summary>
         /// get catalog datacenter
         /// </summary>
         /// <returns></returns>
         public async Task<string[]> CatalogDatacenters()
-        {           
+        {
             var json = await CallConsulReturnJson("/v1/catalog/datacenters");
             if (!string.IsNullOrEmpty(json))
             {
@@ -112,9 +154,9 @@ namespace ConsulSharp
         /// get catalog node by name
         /// </summary>
         /// <returns></returns>
-        public async Task<NodeService> CatalogNodeByName(string nodeName)
+        public async Task<CatalogNode> CatalogNodeByName(string nodeName)
         {
-            return await CallConsulAPI<NodeService>($"/v1/catalog/node/{nodeName}");
+            return await CallConsulAPI<CatalogNode>($"/v1/catalog/node/{nodeName}");
         }
         /// <summary>
         /// get catalog services
@@ -123,7 +165,7 @@ namespace ConsulSharp
         /// <param name="dataCenter">Data Center Name</param>
         /// <returns></returns>
         public async Task<Dictionary<string, string[]>> CatalogServices(string dataCenter = null)
-        {           
+        {
 
             var json = await CallConsulReturnJson("/v1/catalog/services", dataCenter);
             if (!string.IsNullOrEmpty(json))
@@ -178,7 +220,7 @@ namespace ConsulSharp
         /// <returns></returns>
         public async Task<QueryHealthService[]> HealthServiceByName(string serviceName, string dataCenter = null)
         {
-            return await CallConsulAPI<QueryHealthService[]>($"/v1/health/service/{serviceName}", dataCenter);           
+            return await CallConsulAPI<QueryHealthService[]>($"/v1/health/service/{serviceName}", dataCenter);
         }
 
         #endregion
@@ -191,14 +233,7 @@ namespace ConsulSharp
         /// <param name="service">service</param>
         public async Task<(bool result, string backJson)> RegisterServices(Service service)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(_baseAddress);
-            var json = JsonConvert.SerializeObject(service);
-            var stream = new MemoryStream(Encoding.Default.GetBytes(json));
-            var content = new StreamContent(stream);
-            var response = await client.PutAsync($"/v1/agent/service/register", content);
-            var backJson = await response.Content.ReadAsStringAsync();
-            return (result: response.StatusCode == System.Net.HttpStatusCode.OK, backJson: backJson);
+            return await Register(service, $"/v1/agent/service/register");
         }
         /// <summary>
         /// deregister service
@@ -207,11 +242,12 @@ namespace ConsulSharp
         /// <param name="serviceID">service ID</param>
         public async Task<(bool result, string backJson)> UnRegisterServices(string serviceID)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(_baseAddress);
-            var response = await client.PutAsync($"/v1/agent/service/deregister/" + serviceID, null);
-            var backJson = await response.Content.ReadAsStringAsync();
-            return (result: response.StatusCode == System.Net.HttpStatusCode.OK, backJson: backJson);
+            return await Register("", $"/v1/agent/service/deregister/{ serviceID}");
+            //var client = new HttpClient();
+            //client.BaseAddress = new Uri(_baseAddress);
+            //var response = await client.PutAsync($"/v1/agent/service/deregister/" + serviceID, null);
+            //var backJson = await response.Content.ReadAsStringAsync();
+            //return (result: response.StatusCode == System.Net.HttpStatusCode.OK, backJson: backJson);
         }
         #endregion
 

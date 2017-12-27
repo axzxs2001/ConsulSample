@@ -5,25 +5,25 @@ using System.Text;
 namespace ConsulSharp
 {
     /// <summary>
-    /// node services
+    /// deregister entity
     /// </summary>
-    public class NodeService
+    public class DeCatalogEntity
     {
         /// <summary>
-        /// id
+        /// datacenter
         /// </summary>
-        public string ID { get; set; }
+        public string Datacenter { get; set; }
         /// <summary>
-        /// service name
+        /// node
         /// </summary>
-        public string Service { get; set; }
+        public string Node { get; set; }
         /// <summary>
-        /// service tags
+        /// check id
         /// </summary>
-        public string[] Tags { get; set; }
+        public string CheckID { get; set; }
         /// <summary>
-        /// port
+        /// service id
         /// </summary>
-        public int Port { get; set; }
+        public string ServiceID { get; set; }
     }
 }

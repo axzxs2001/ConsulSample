@@ -16,6 +16,6 @@ namespace ConsulSharp
         /// <summary>
         /// services
         /// </summary>
-        public Dictionary<string,CatalogService> Services { get; set; }
+        public Dictionary<string, BaseService> Services { get; set; }
     }
 }
