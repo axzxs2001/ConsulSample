@@ -10,17 +10,17 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、注册管理  2、Catalog查询  3、Health查询   按e退出");
+                Console.WriteLine("1、Agent  2、Catalog  3、Health  按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        ServiceManage();
+                        AgentManage();
                         break;
                     case "2":
-                        CatalogQuery();
+                        CatalogManage();
                         break;
                     case "3":
-                        HealthQuery();
+                        HealthManage();
                         break;
                     case "e":
                         return;
@@ -29,11 +29,13 @@ namespace ConsulSharpSample
         }
 
 
-        #region Health查询
+
+
+        #region Health管理
         /// <summary>
         /// Health查询
         /// </summary>
-        static void HealthQuery()
+        static void HealthManage()
         {
             while (true)
             {
@@ -60,7 +62,7 @@ namespace ConsulSharpSample
         {
             Console.WriteLine("请输入服务名称：");
             var serviceName = Console.ReadLine();
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new HealthGovern();
             foreach (var healthService in serviceGovern.HealthServiceByName(serviceName: serviceName).GetAwaiter().GetResult())
             {
                 Console.WriteLine($"服务名称：{healthService.Service.Service} {healthService.Service.Address}:{healthService.Service.Port}");
@@ -72,11 +74,11 @@ namespace ConsulSharpSample
             }
         }
         #endregion
-        #region Catalog查询
+        #region Catalog管理
         /// <summary>
         /// Catalog查询
         /// </summary>
-        static void CatalogQuery()
+        static void CatalogManage()
         {
             while (true)
             {
@@ -114,9 +116,9 @@ namespace ConsulSharpSample
         /// </summary>
         private static void RegisterCatalog()
         {
-            var catalog = new CatalogEntity();          
+            var catalog = new CatalogEntity();
 
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var result = serviceGovern.RegisterCatalog(catalog).GetAwaiter().GetResult();
             Console.WriteLine(result.backJson);
             Console.WriteLine(result.result);
@@ -127,7 +129,7 @@ namespace ConsulSharpSample
         private static void DeregisterCatalog()
         {
             var catalog = new DeCatalogEntity();
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var result = serviceGovern.DeregisterCatalog(catalog).GetAwaiter().GetResult();
             Console.WriteLine(result.backJson);
             Console.WriteLine(result.result);
@@ -137,7 +139,7 @@ namespace ConsulSharpSample
         /// </summary>
         private static void QueryCatalogDatacenters()
         {
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var i = 1;
             foreach (var service in serviceGovern.CatalogDatacenters().GetAwaiter().GetResult())
             {
@@ -149,7 +151,7 @@ namespace ConsulSharpSample
         /// </summary>
         private static void QueryCatalogNodes()
         {
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var i = 1;
             foreach (var node in serviceGovern.CatalogNodes().GetAwaiter().GetResult())
             {
@@ -163,13 +165,13 @@ namespace ConsulSharpSample
         {
             Console.WriteLine("请输入Node名称：");
             var nodeName = Console.ReadLine();
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var i = 1;
             var node = serviceGovern.CatalogNodeByName(nodeName).GetAwaiter().GetResult();
 
             Console.WriteLine($"{i++ }、{node.Node.ID} {node.Node.Node}  地址：{node.Node.Address} 位于数据中心：{node.Node.Datacenter}");
 
-            foreach(var service in node.Services)
+            foreach (var service in node.Services)
             {
                 Console.WriteLine($"{service.Key}  {service.Value.Service}:{service.Value.Port}");
             }
@@ -180,7 +182,7 @@ namespace ConsulSharpSample
         /// </summary>
         private static void QueryCatalogServices()
         {
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             var i = 1;
             foreach (var service in serviceGovern.CatalogServices().GetAwaiter().GetResult())
             {
@@ -201,7 +203,7 @@ namespace ConsulSharpSample
         {
             Console.WriteLine("请输入服务名称：");
             var serviceName = Console.ReadLine();
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new CatalogGovern();
             foreach (var service in serviceGovern.CatalogServiceByName(serviceName).GetAwaiter().GetResult())
             {
                 Console.WriteLine($"Node:{service.Node }  服务名称：{service.ServiceName} 地址：{service.ServiceAddress}:{service.ServicePort}");
@@ -210,15 +212,15 @@ namespace ConsulSharpSample
 
         #endregion
 
-        #region 注册，注销服务
+        #region agent管理
         /// <summary>
         /// 服务注册，注销
         /// </summary>
-        static void ServiceManage()
+        static void AgentManage()
         {
             while (true)
             {
-                Console.WriteLine("1、注册服务  2、注销服务  按e退出");
+                Console.WriteLine("1、注册服务  2、注销服务 3、查看成员  按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -227,9 +229,24 @@ namespace ConsulSharpSample
                     case "2":
                         UnRegisterService();
                         break;
+                    case "3":
+                        QueryMembers();
+                        break;
                     case "e":
                         return;
                 }
+            }
+        }
+        /// <summary>
+        /// 查询成员
+        /// </summary>
+        private static void QueryMembers()
+        {
+            var agentGovern = new AgentGovern();
+            foreach (var member in agentGovern.CatalogNodes().GetAwaiter().GetResult())
+            {
+
+                Console.WriteLine($"Name:{member.Name} 地址:{member.Addr}:{member.Port}");
             }
         }
 
@@ -238,7 +255,7 @@ namespace ConsulSharpSample
         /// </summary>
         private static void UnRegisterService()
         {
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new AgentGovern();
             var result = serviceGovern.UnRegisterServices("newservice001").GetAwaiter().GetResult();
             Console.WriteLine(result.backJson);
             Console.WriteLine(result.result);
@@ -259,7 +276,7 @@ namespace ConsulSharpSample
             service.Checks[0] = new HttpCheck { ID = "check1", Name = "check1", Http = "http://192.168.1.110:5005/health", Interval = "10s" };
             service.Tags = new string[] { "newservice001" };
 
-            var serviceGovern = new ServiceGovern();
+            var serviceGovern = new AgentGovern();
             var result = serviceGovern.RegisterServices(service).GetAwaiter().GetResult();
             Console.WriteLine(result.backJson);
             Console.WriteLine(result.result);
