@@ -13,8 +13,7 @@ namespace ConsulSharp
     /// Service Govern
     /// </summary>
     public class AgentGovern: Govern
-    {
-        
+    {        
         /// <summary>
         /// ctor
         /// </summary>
@@ -32,6 +31,23 @@ namespace ConsulSharp
             return await CallConsulAPI<Member[]>("/v1/agent/members");
         }
 
+        /// <summary>
+        /// get agent configuration
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Configuration> Configuration()
+        {
+            return await CallConsulAPI<Configuration>("/v1/agent/self");
+        }
+
+        /// <summary>
+        /// reload agent
+        /// </summary>
+        /// <returns></returns>    
+        public async Task<(bool result, string backJson)> ReloadAgent()
+        {
+            return await Register("", $"/v1/agent/reload");           
+        }
 
         #region register and deregister service
         /// <summary>
