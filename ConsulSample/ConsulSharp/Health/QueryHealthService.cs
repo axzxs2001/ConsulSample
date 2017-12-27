@@ -12,7 +12,7 @@ namespace ConsulSharp.Health
         /// <summary>
         /// Node
         /// </summary>
-        public HealthNode Node { get; set; }
+        public HealthCatalogNode Node { get; set; }
         /// <summary>
         /// Serice
         /// </summary>

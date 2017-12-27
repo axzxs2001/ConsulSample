@@ -23,6 +23,52 @@ namespace ConsulSharp
         {
             _baseAddress = baseAddress;
         }
+        #region base method
+        /// <summary>
+        /// base call method
+        /// </summary>
+        /// <typeparam name="T">back type</typeparam>
+        /// <param name="url">request url</param>
+        /// <param name="dataCenter">datacenter</param>
+        /// <returns></returns>
+        private async Task<T> CallConsulAPI<T>(string url, string dataCenter = null)
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+            var response = await client.GetAsync(url);
+            var json = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    var entity = JsonConvert.DeserializeObject<T>(json);
+                    return entity;
+                }
+                catch (JsonReaderException)
+                {
+                    throw new ApplicationException($"back content is error formatter:{json}");
+                }
+            }
+            else
+            {
+                throw new ApplicationException($"back content is empty.");
+            }
+        }
+
+        /// <summary>
+        /// call url back json
+        /// </summary>
+        /// <param name="url">request url</param>
+        /// <param name="dataCenter">datacenter</param>
+        /// <returns></returns>
+        public async Task<string> CallConsulReturnJson(string url,string dataCenter=null)
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+            var response = await client.GetAsync(url);
+            return await response.Content.ReadAsStringAsync();
+        }
+        #endregion
 
         #region catalog
         /// <summary>
@@ -30,11 +76,8 @@ namespace ConsulSharp
         /// </summary>
         /// <returns></returns>
         public async Task<string[]> CatalogDatacenters()
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(_baseAddress);
-            var response = await client.GetAsync("/v1/catalog/datacenters");
-            var json = await response.Content.ReadAsStringAsync();
+        {           
+            var json = await CallConsulReturnJson("/v1/catalog/datacenters");
             if (!string.IsNullOrEmpty(json))
             {
                 try
@@ -42,7 +85,7 @@ namespace ConsulSharp
                     dynamic jsonObj = JsonConvert.DeserializeObject(json);
                     var services = new List<string>();
                     foreach (var serviceCheck in jsonObj)
-                    {                        
+                    {
                         services.Add(serviceCheck.Value);
                     }
                     return services.ToArray();
@@ -57,8 +100,22 @@ namespace ConsulSharp
                 throw new ApplicationException($"back content is empty.");
             }
         }
-
-
+        /// <summary>
+        /// get catalog nodes
+        /// </summary>
+        /// <returns></returns>
+        public async Task<HealthCatalogNode[]> CatalogNodes()
+        {
+            return await CallConsulAPI<HealthCatalogNode[]>("/v1/catalog/nodes");
+        }
+        /// <summary>
+        /// get catalog node by name
+        /// </summary>
+        /// <returns></returns>
+        public async Task<NodeService> CatalogNodeByName(string nodeName)
+        {
+            return await CallConsulAPI<NodeService>($"/v1/catalog/node/{nodeName}");
+        }
         /// <summary>
         /// get catalog services
         /// </summary>    
@@ -66,12 +123,9 @@ namespace ConsulSharp
         /// <param name="dataCenter">Data Center Name</param>
         /// <returns></returns>
         public async Task<Dictionary<string, string[]>> CatalogServices(string dataCenter = null)
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
+        {           
 
-            var response = await client.GetAsync("/v1/catalog/services");
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await CallConsulReturnJson("/v1/catalog/services", dataCenter);
             if (!string.IsNullOrEmpty(json))
             {
                 try
@@ -108,27 +162,7 @@ namespace ConsulSharp
         /// <returns></returns>
         public async Task<CatalogService[]> CatalogServiceByName(string serviceName, string dataCenter = null)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
-            var response = await client.GetAsync($"/v1/catalog/service/{serviceName}");
-            var json = await response.Content.ReadAsStringAsync();
-            if (!string.IsNullOrEmpty(json))
-            {
-                try
-                {
-                    var catalogServices = JsonConvert.DeserializeObject<CatalogService[]>(json);
-                    return catalogServices;
-                }
-                catch (JsonReaderException)
-                {
-                    throw new ApplicationException($"back content is error formatter:{json}");
-                }
-            }
-            else
-            {
-                throw new ApplicationException($"back content is empty.");
-            }
-
+            return await CallConsulAPI<CatalogService[]>($"/v1/catalog/service/{serviceName}", dataCenter);
         }
         #endregion
 
@@ -144,28 +178,7 @@ namespace ConsulSharp
         /// <returns></returns>
         public async Task<QueryHealthService[]> HealthServiceByName(string serviceName, string dataCenter = null)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri($"{_baseAddress}{(!string.IsNullOrEmpty(dataCenter) ? $"?dc={dataCenter}" : "")}");
-            var response = await client.GetAsync($"/v1/health/service/{serviceName}");
-            var json = await response.Content.ReadAsStringAsync();
-            if (!string.IsNullOrEmpty(json))
-            {
-                try
-                {
-                    var queryHealthServices = JsonConvert.DeserializeObject<QueryHealthService[]>(json);
-                    return queryHealthServices;
-
-
-                }
-                catch (JsonReaderException)
-                {
-                    throw new ApplicationException($"back content is error formatter:{json}");
-                }
-            }
-            else
-            {
-                throw new ApplicationException($"back content is empty.");
-            }
+            return await CallConsulAPI<QueryHealthService[]>($"/v1/health/service/{serviceName}", dataCenter);           
         }
 
         #endregion
@@ -199,10 +212,7 @@ namespace ConsulSharp
             var response = await client.PutAsync($"/v1/agent/service/deregister/" + serviceID, null);
             var backJson = await response.Content.ReadAsStringAsync();
             return (result: response.StatusCode == System.Net.HttpStatusCode.OK, backJson: backJson);
-
-
         }
-
         #endregion
 
     }

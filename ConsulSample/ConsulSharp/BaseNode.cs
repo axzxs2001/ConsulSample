@@ -7,7 +7,7 @@ namespace ConsulSharp
     /// <summary>
     /// Health Node
     /// </summary>
-    public class HealthNode
+    public class BaseNode
     {
         /// <summary>
         /// Node ID
@@ -32,14 +32,6 @@ namespace ConsulSharp
         /// <summary>
         /// Meta
         /// </summary>
-        public object Meta { get; set;}
-        /// <summary>
-        /// Create Index
-        /// </summary>
-        public int CreateIndex { get; set; }
-        /// <summary>
-        /// Modify Index
-        /// </summary>
-        public int ModifyIndex { get; set; }
+        public object Meta { get; set;} 
     }
 }

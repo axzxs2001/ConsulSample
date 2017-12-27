@@ -80,16 +80,19 @@ namespace ConsulSharpSample
         {
             while (true)
             {
-                Console.WriteLine("1、查询Catalog数据中心  2、查询全部Catalog服务  3、按名称查Catalog服务   按e退出");
+                Console.WriteLine("1、查询Catalog数据中心  2、查询Catalog的Nodes 3、查询全部Catalog服务  4、按名称查Catalog服务   按e退出");
                 switch (Console.ReadLine())
                 {
                     case "1":
                         QueryCatalogDatacenters();
                         break;
                     case "2":
-                        QueryCatalogServices();
+                        QueryCatalogNodes();
                         break;
                     case "3":
+                        QueryCatalogServices();
+                        break;
+                    case "4":
                         QueryCatalogServiceByName();
                         break;
                     case "e":
@@ -109,7 +112,18 @@ namespace ConsulSharpSample
                 Console.WriteLine($"{i++ }、{service}");
             }
         }
-
+        /// <summary>
+        /// 查旬Catalog的nodes
+        /// </summary>
+        private static void QueryCatalogNodes()
+        {
+            var serviceGovern = new ServiceGovern();
+            var i = 1;
+            foreach (var node in serviceGovern.CatalogNodes().GetAwaiter().GetResult())
+            {
+                Console.WriteLine($"{i++ }、{node.ID} {node.Node}  地址：{node.Address} 位于数据中心：{node.Datacenter}");
+            }
+        }
         /// <summary>
         /// 查旬Catalog的服务 
         /// </summary>
