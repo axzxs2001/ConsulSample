@@ -17,11 +17,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "文档", "文档", "{9B4A7327-9A6E-41A8-BBB4-FF7587688DBF}"
 	ProjectSection(SolutionItems) = preProject
 		文档\consul.docx = 文档\consul.docx
+		文档\基于.net core构建微服务——consul.pptx = 文档\基于.net core构建微服务——consul.pptx
+		文档\基于.net core构建微服务——ocelot.pptx = 文档\基于.net core构建微服务——ocelot.pptx
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulSharp", "ConsulSharp\ConsulSharp.csproj", "{D9B9DB4D-C8FE-421D-A673-2869A244198D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulSharpSample", "ConsulSharpSample\ConsulSharpSample.csproj", "{A85B0EDE-817D-4267-B4BA-3FDA2997F6F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulSharpSample", "ConsulSharpSample\ConsulSharpSample.csproj", "{A85B0EDE-817D-4267-B4BA-3FDA2997F6F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
